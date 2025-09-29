@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karthikeyan Project</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+    }
+
+    header, footer {
+      background: black;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #555;
+      padding: 10px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .content, .sidebar {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Contact Form */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    form input, form textarea, form button {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    form button {
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    form button:hover {
+      background: #0056b3;
+    }
+
+    /* To-Do List */
+    .todo-container input, .todo-container button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .todo-container ul {
+      list-style: none;
+      padding: 0;
+    }
+    .todo-container li {
+      background: #eee;
+      padding: 10px;
+      margin-top: 5px;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 5px;
+    }
+    .todo-container button.delete {
+      background: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    @media (max-width: 766px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      nav {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>Karthikeyan Webpage</h1>
+    <p> Home | Contact | To-Do-List</p>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#contact">Contact</a>
+    <a href="#todo">To-Do List</a>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="container">
+    <!-- Main Content -->
+    <div class="content" id="home">
+      <h2>Welcome</h2>
+      <p>This webpage demonstrates HTML, CSS, and JavaScript together:</p>
+      <ul>
+        <li>Responsive Layout with Flexbox & Grid</li>
+        <li>Contact Form with Validation</li>
+        <li>Interactive To-Do List</li>
+      </ul>
+
+      <!-- Contact Form -->
+      <section id="contact">
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+          <input type="text" id="name" placeholder="Enter your name">
+          <input type="email" id="email" placeholder="Enter your email">
+          <textarea id="message" rows="4" placeholder="Your message"></textarea>
+          <button type="submit">Submit</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- Sidebar (To-Do List) -->
+    <div class="sidebar" id="todo">
+      <h2>To-Do List</h2>
+      <div class="todo-container">
+        <input type="text" id="taskInput" placeholder="Enter a task">
+        <button onclick="addTask()">Add Task</button>
+        <ul id="taskList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; Karthikeyan Website</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Form Validation
+    document.getElementById("contactForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      let name = document.getElementById("name").value.trim();
+      let email = document.getElementById("email").value.trim();
+      let message = document.getElementById("message").value.trim();
+
+      if (name === "") {
+        alert("Name is required!");
+        return;
+      }
+      if (email === "" || !/\\S+@\\S+\\.\\S+/.test(email)) {
+        alert("Enter a valid email address!");
+        return;
+      }
+      if (message.length < 10) {
+        alert("Message should be at least 10 characters long!");
+        return;
+      }
+
+      alert("Form submitted successfully!");
+    });
+
+    // To-Do List
+    function addTask() {
+      let taskInput = document.getElementById("taskInput");
+      let taskText = taskInput.value.trim();
+      if (taskText === "") {
+        alert("Please enter a task!");
+        return;
+      }
+
+      let li = document.createElement("li");
+      li.textContent = taskText;
+
+      let delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.className = "delete";
+      delBtn.onclick = function() {
+        li.remove();
+      };
+
+      li.appendChild(delBtn);
+      document.getElementById("taskList").appendChild(li);
+      taskInput.value = "";
+    }
+  </script>
+</body>
+</html>
