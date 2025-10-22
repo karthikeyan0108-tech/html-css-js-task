@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Styling and JavaScript</title>
+  <style>
+    /* ---------------------------
+       GLOBAL STYLES
+    ---------------------------- */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: blueviolet;
+      color: green;
+      text-align: center;
+    }
+
+    header {
+      background-color: #0076cc;
+      color: greenyellow;
+      padding: 30px;
+    }
+
+    h1 {
+      margin: 1;
+    }
+
+    section {
+      margin: 30px auto;
+      padding: 20px;
+      max-width: 1000px;
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    button {
+      background-color: #0079cc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin: 40px;
+      cursor: pointer;
+      transition: 0.5s;
+    }
+
+    button:hover {
+      background-color: floralwhite;
+    }
+
+    img {
+      border-radius: 10px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ---------------------------
+       Using Media Queries
+    ---------------------------- */
+    @media (max-width: 800px) {
+      body {
+        background-color: wheat;
+      }
+
+      section {
+        width: 100%;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 40px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      header {
+        padding: 20px;
+      }
+
+      button {
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===========================
+       HEADER SECTION
+  ============================ -->
+  <header>
+    <h1>Advanced Styling & JavaScript</h1>
+    <h2>Done By Karthikeyan</h2>
+    <p>Responsive Design | Interactive Features | API Data</p>
+  </header>
+
+  <!-- ===========================
+       SECTION 1: RESPONSIVE DESIGN INFO
+  ============================ -->
+  <section id="responsive">
+    <h2>1️⃣ My Responsive Design </h2>
+    <p>This page automatically tell about your mobile, tablet, and desktop using <b>CSS media queries</b>.</p>
+  </section>
+
+  <!-- ===========================
+       SECTION 2: IMAGE CAROUSEL
+  ============================ -->
+  <section id="carousel">
+    <h2>2️⃣ JavaScript Image Carousel</h2>
+    <img id="carouselImage" src="https://picsum.photos/seed/pic1/600/300" alt="Carousel Image">
+    <br>
+    <button onclick="prevImage()">Previous</button>
+    <button onclick="nextImage()">Next</button>
+  </section>
+
+  <!-- ===========================
+       SECTION 3: QUIZ
+  ============================ -->
+  <section id="quiz">
+    <h2>3️⃣ Interactive JavaScript Quiz</h2>
+    <p id="question"></p>
+    <div>
+      <button id="option1"></button>
+      <button id="option2"></button>
+    </div>
+    <p id="quizResult"></p>
+  </section>
+
+  <!-- ===========================
+       SECTION 4: FETCH API DATA
+  ============================ -->
+  <section id="api">
+    <h2>4️⃣ Fetch Data from Public API</h2>
+    <p id="joke">Click the button to load a random joke!</p>
+    <button onclick="getJoke()">Get New Joke</button>
+  </section>
+
+  <!-- ===========================
+       JAVASCRIPT SECTION
+  ============================ -->
+  <script>
+    /* ---------------------------
+       IMAGE CAROUSEL SCRIPT
+    ---------------------------- */
+    const images = [
+      "https://picsum.photos/seed/pic1/600/300",
+      "https://picsum.photos/seed/pic2/600/300",
+      "https://picsum.photos/seed/pic3/600/300"
+    ];
+    let currentIndex = 0;
+
+    function showImage() {
+      document.getElementById("carouselImage").src = images[currentIndex];
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % images.length;
+      showImage();
+    }
+
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      showImage();
+    }
+
+    /* ---------------------------
+       QUIZ SCRIPT
+    ---------------------------- */
+    const quiz = [
+      {
+        question: "Which language is used for web styling?",
+        options: ["CSS", "Python"],
+        answer: "CSS"
+      },
+      {
+        question: "Which tag is used to include JavaScript?",
+        options: ["<js>", "<script>"],
+        answer: "<script>"
+      }
+    ];
+
+    let currentQuestion = 0;
+    const questionElement = document.getElementById("question");
+    const option1 = document.getElementById("option1");
+    const option2 = document.getElementById("option2");
+    const quizResult = document.getElementById("quizResult");
+
+    function loadQuestion() {
+      const q = quiz[currentQuestion];
+      questionElement.textContent = q.question;
+      option1.textContent = q.options[0];
+      option2.textContent = q.options[1];
+      quizResult.textContent = "";
+    }
+
+    function checkAnswer(selected) {
+      const correct = quiz[currentQuestion].answer;
+      if (selected === correct) {
+        quizResult.textContent = "✅ Correct!";
+        quizResult.style.color = "green";
+      } else {
+        quizResult.textContent = "❌ Wrong!";
+        quizResult.style.color = "red";
+      }
+
+      currentQuestion = (currentQuestion + 1) % quiz.length;
+      setTimeout(loadQuestion, 1000);
+    }
+
+    option1.addEventListener("click", () => checkAnswer(option1.textContent));
+    option2.addEventListener("click", () => checkAnswer(option2.textContent));
+
+    loadQuestion();
+
+    /* ---------------------------
+       FETCH API SCRIPT
+    ---------------------------- */
+    async function getJoke() {
+      try {
+        const response = await fetch("https://official-joke-api.appspot.com/random_joke");
+        const data = await response.json();
+        document.getElementById("joke").textContent = `${data.setup} — ${data.punchline}`;
+      } catch (error) {
+        document.getElementById("joke").textContent = "⚠️ Failed to load joke. Try again!";
+      }
+    }
+  </script>
+
+</body>
+</html>
