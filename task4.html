@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Project Implementation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: whitesmoke;
+      color: black;
+    }
+
+    header {
+      background: midnightblue;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: steelblue;
+      padding: 10px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: yellow;
+    }
+
+    section {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: darkslateblue;
+      margin-bottom: 20px;
+    }
+
+    /* Portfolio Section */
+    .portfolio .project {
+      background: white;
+      margin: 10px 0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px gray;
+    }
+
+    .about p {
+      background: lavender;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .contact {
+      margin-top: 20px;
+      background: lightcyan;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    /* To-Do App */
+    .todo-container {
+      text-align: center;
+      background: lightyellow;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #todo-input {
+      padding: 10px;
+      width: 60%;
+      margin-right: 10px;
+      border: 1px solid gray;
+      border-radius: 5px;
+      background: white;
+    }
+
+    #add-btn {
+      padding: 10px 15px;
+      border: none;
+      background: seagreen;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #add-btn:hover {
+      background: mediumseagreen;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: white;
+      margin: 5px auto;
+      width: 80%;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 4px lightgray;
+    }
+
+    .delete-btn {
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: firebrick;
+    }
+
+    /* Product Listing */
+    .filters {
+      text-align: center;
+      margin-bottom: 20px;
+      background: aliceblue;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    select {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 5px;
+      border: 1px solid gray;
+      background: white;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .product {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 5px lightgray;
+    }
+
+    .product img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .product h4 {
+      color: darkblue;
+    }
+
+    footer {
+      text-align: center;
+      background: midnightblue;
+      color: white;
+      padding: 10px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Full Project Implementation</h1>
+  </header>
+
+  <nav>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#todo">To-Do App</a>
+    <a href="#products">Product Listing</a>
+  </nav>
+
+  <!-- Portfolio Section -->
+  <section id="portfolio" class="portfolio">
+    <h2>Personal Portfolio</h2>
+    <div class="about">
+      <p>Hello! I’m <b>Karthikeyan S G</b>, a passionate web developer skilled in HTML, CSS, and JavaScript.  
+      I enjoy creating interactive, responsive websites that deliver smooth user experiences.</p>
+    </div>
+
+    <div class="project">
+      <h3>Project 1: Self Charging car with solar and wind Energy</h3>
+      <p>A Project is about theself charging electric car prototypeusing solar and wind energy with the chassis designin arduino uno in system control.</p>
+    </div>
+
+    <div class="project">
+      <h3>Project 2: Earthquake Detector</h3>
+      <p>An Arduino-based vibration detection system that monitors seismic activity and triggers alerts.</p>
+    </div>
+
+    <div class="contact">
+      <h3>Contact Me</h3>
+      <p>Email: karthikeyan@example.com | GitHub: github.com/karthikeyansg</p>
+    </div>
+  </section>
+
+  <!-- To-Do List Section -->
+  <section id="todo">
+    <h2>To-Do List with Local Storage</h2>
+    <div class="todo-container">
+      <input type="text" id="todo-input" placeholder="Enter a new task..." />
+      <button id="add-btn">Add</button>
+      <ul id="todo-list"></ul>
+    </div>
+  </section>
+
+  <!-- Product Listing Section -->
+  <section id="products">
+    <h2>Product Listing Page</h2>
+    <div class="filters">
+      <select id="category-filter">
+        <option value="all">All</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+        <option value="accessories">Accessories</option>
+      </select>
+
+      <select id="sort">
+        <option value="none">Sort By</option>
+        <option value="price">Price</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
+
+    <div class="products" id="product-container"></div>
+  </section>
+
+  <footer>
+    <p>© 2025 Karthikeyan S G | All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* ==================== TO-DO APP ==================== */
+    const input = document.getElementById("todo-input");
+    const addBtn = document.getElementById("add-btn");
+    const list = document.getElementById("todo-list");
+
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      list.innerHTML = "";
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.textContent = task;
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "delete-btn";
+        delBtn.onclick = () => deleteTask(index);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function addTask() {
+      const task = input.value.trim();
+      if (task === "") return;
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks.push(task);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      input.value = "";
+      loadTasks();
+    }
+
+    function deleteTask(index) {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      loadTasks();
+    }
+
+    addBtn.addEventListener("click", addTask);
+    window.addEventListener("load", loadTasks);
+
+    /* ==================== PRODUCT LISTING ==================== */
+    const products = [
+      { name: "Smartphone", category: "electronics", price: 699, rating: 4.5, img: "https://via.placeholder.com/200" },
+      { name: "T-Shirt", category: "clothing", price: 29, rating: 4.1, img: "https://via.placeholder.com/200" },
+      { name: "Headphones", category: "electronics", price: 99, rating: 4.7, img: "https://via.placeholder.com/200" },
+      { name: "Watch", category: "accessories", price: 199, rating: 4.3, img: "https://via.placeholder.com/200" },
+      { name: "Jeans", category: "clothing", price: 59, rating: 4.0, img: "https://via.placeholder.com/200" }
+    ];
+
+    const productContainer = document.getElementById("product-container");
+    const categoryFilter = document.getElementById("category-filter");
+    const sortSelect = document.getElementById("sort");
+
+    function displayProducts(items) {
+      productContainer.innerHTML = "";
+      items.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <h4>${p.name}</h4>
+          <p>Category: ${p.category}</p>
+          <p>Price: $${p.price}</p>
+          <p>Rating: ⭐ ${p.rating}</p>
+        `;
+        productContainer.appendChild(div);
+      });
+    }
+
+    function filterProducts() {
+      let filtered = [...products];
+      const cat = categoryFilter.value;
+      if (cat !== "all") filtered = filtered.filter(p => p.category === cat);
+
+      const sort = sortSelect.value;
+      if (sort === "price") filtered.sort((a, b) => a.price - b.price);
+      if (sort === "rating") filtered.sort((a, b) => b.rating - a.rating);
+
+      displayProducts(filtered);
+    }
+
+    categoryFilter.addEventListener("change", filterProducts);
+    sortSelect.addEventListener("change", filterProducts);
+    window.addEventListener("load", () => displayProducts(products));
+  </script>
+</body>
+</html>
