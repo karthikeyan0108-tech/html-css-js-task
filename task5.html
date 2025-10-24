@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Capstone: compact, optimized single-page web app demo (product list, search, cart).">
+<title>Capstone — Web App Demo</title>
+
+<!-- Critical inline CSS: keeps first render fast -->
+<style>
+  /* Reset-ish */
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;line-height:1.4;margin:0;background:mintcream;color:darkslategray;-webkit-font-smoothing:antialiased}
+  a{color:royalblue;text-decoration:none}
+  img{max-width:100%;display:block}
+  /* Layout */
+  .container{max-width:1100px;margin:0 auto;padding:1rem}
+  header{display:flex;align-items:center;gap:1rem;justify-content:space-between;padding:1rem 0}
+  .brand{display:flex;align-items:center;gap:.6rem}
+  .brand .logo{width:44px;height:44px;border-radius:8px;background:royalblue;color:white;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .searchbar{flex:1;margin-left:1rem}
+  .searchbar input{width:100%;padding:.6rem .8rem;border-radius:8px;border:1px solid lightgray;background:white}
+  main{display:grid;grid-template-columns:1fr 320px;gap:1rem}
+  /* Product grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+  .card{background:white;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.06);overflow:hidden;display:flex;flex-direction:column}
+  .card img{height:160px;object-fit:cover}
+  .card .body{padding:.9rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+  .card h4{margin:0;font-size:1rem;color:darkslategray}
+  .card p{margin:0;font-size:.86rem;color:gray}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+  .btn{appearance:none;border:0;padding:.5rem .7rem;border-radius:8px;cursor:pointer;font-weight:600}
+  .btn-primary{background:royalblue;color:white}
+  .btn-ghost{background:transparent;border:1px solid lightgray}
+  /* Sidebar (cart) */
+  aside{background:white;border-radius:12px;padding:1rem;height:fit-content;box-shadow:0 6px 18px rgba(0,0,0,.04)}
+  .cart-list{display:flex;flex-direction:column;gap:.6rem}
+  .cart-item{display:flex;gap:.6rem;align-items:center}
+  .cart-item img{width:56px;height:56px;border-radius:6px;object-fit:cover}
+  .small{font-size:.9rem;color:gray}
+  footer{padding:1rem 0;text-align:center;color:gray}
+  /* Responsive */
+  @media (max-width:900px){
+    main{grid-template-columns:1fr}
+    .searchbar{margin-left:0;margin-top:.6rem}
+    header{flex-direction:column;align-items:flex-start;gap:.6rem}
+  }
+</style>
+
+<!-- Defer non-critical JS to speed up initial render -->
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand" role="banner">
+      <div class="logo" aria-hidden="true">CP</div>
+      <div>
+        <div style="font-weight:700">Capstone App</div>
+        <div class="small">Optimized single-page demo</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:.8rem;">
+      <div class="searchbar" aria-label="Search products">
+        <input id="search" type="search" placeholder="Search products, e.g., sneakers" aria-label="Search products">
+      </div>
+
+      <button id="themeBtn" class="btn btn-ghost" aria-label="Toggle theme">Toggle Theme</button>
+      <button id="viewCartBtn" class="btn btn-primary" aria-label="Open cart">Cart (<span id="cartCount">0</span>)</button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2 style="margin:0 0 .6rem 0">Products</h2>
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+    </section>
+
+    <aside aria-label="Shopping cart">
+      <h3 style="margin-top:0">Your Cart</h3>
+      <div id="cart" class="cart-list"><div class="small">Cart empty — add items to get started.</div></div>
+      <hr style="margin:.8rem 0;border:none;border-top:1px dashed lightgray">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Total</strong><div id="total" class="small">₹0</div></div>
+        <button id="checkout" class="btn btn-primary">Checkout</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <small>Built with focus on performance, lazy loading, and mobile responsiveness.</small>
+  </footer>
+</div>
+
+<!-- Application data + logic -->
+<script defer>
+/*
+  Single-file app JS:
+  - Small dataset
+  - Search/filter
+  - Add-to-cart
+  - Persist cart to localStorage
+  - Lazy-loaded images (loading="lazy")
+  - Minimal DOM operations for performance
+*/
+
+/* ---------------------
+   Data (small and inline)
+   Using local data reduces HTTP calls and keeps the page self-contained.
+   --------------------- */
+const PRODUCTS = [
+  {id:1,name:"Classic White Sneakers",desc:"Comfortable everyday sneakers.",price:1999,img:"https://via.placeholder.com/600x400?text=Sneakers+1"},
+  {id:2,name:"Trail Running Shoes",desc:"Grip and comfort for rough terrain.",price:2999,img:"https://via.placeholder.com/600x400?text=Running+2"},
+  {id:3,name:"Casual Canvas Shoes",desc:"Lightweight and stylish.",price:1499,img:"https://via.placeholder.com/600x400?text=Canvas+3"},
+  {id:4,name:"Formal Leather Oxfords",desc:"Polished look for formal events.",price:3499,img:"https://via.placeholder.com/600x400?text=Oxfords+4"},
+  {id:5,name:"Flip Flops",desc:"Easy summer footwear.",price:499,img:"https://via.placeholder.com/600x400?text=FlipFlops+5"},
+  {id:6,name:"Sports Sandals",desc:"Supportive and quick-dry.",price:1299,img:"https://via.placeholder.com/600x400?text=Sandals+6"}
+];
+
+/* ---------------------
+   Utilities
+   --------------------- */
+const el = sel => document.querySelector(sel);
+const fmt = n => "₹" + n.toLocaleString("en-IN");
+
+/* ---------------------
+   Cart (persisted)
+   --------------------- */
+let cart = JSON.parse(localStorage.getItem("capstone_cart")||"{}");
+
+function saveCart(){ localStorage.setItem("capstone_cart", JSON.stringify(cart)); updateCartUI(); }
+
+function addToCart(id){
+  cart[id] = (cart[id]||0) + 1;
+  saveCart();
+}
+
+/* ---------------------
+   UI rendering
+   Minimal DOM updates: render product grid once; update cart separately.
+   --------------------- */
+function renderProducts(items){
+  const container = el("#productGrid");
+  container.innerHTML = ""; // replace quickly
+  const frag = document.createDocumentFragment();
+  items.forEach(p=>{
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <img loading="lazy" alt="${p.name}" src="${p.img}">
+      <div class="body">
+        <h4>${p.name}</h4>
+        <p class="small">${p.desc}</p>
+        <div class="meta">
+          <div><strong>${fmt(p.price)}</strong></div>
+          <div>
+            <button class="btn btn-ghost" data-id="${p.id}" aria-label="View">View</button>
+            <button class="btn btn-primary" data-add="${p.id}" aria-label="Add to cart">Add</button>
+          </div>
+        </div>
+      </div>`;
+    frag.appendChild(card);
+  });
+  container.appendChild(frag);
+}
+
+/* Update cart sidebar */
+function updateCartUI(){
+  const cartEl = el("#cart");
+  cartEl.innerHTML = "";
+  const ids = Object.keys(cart);
+  if(ids.length === 0){ cartEl.innerHTML = '<div class="small">Cart empty — add items to get started.</div>'; el("#cartCount").textContent = "0"; el("#total").textContent = fmt(0); return; }
+  let total = 0;
+  ids.forEach(id=>{
+    const qty = cart[id];
+    const p = PRODUCTS.find(x=>x.id==id);
+    if(!p) return;
+    total += p.price*qty;
+    const node = document.createElement("div");
+    node.className = "cart-item";
+    node.innerHTML = `
+      <img alt="${p.name}" src="${p.img}" loading="lazy">
+      <div style="flex:1">
+        <div style="font-weight:700">${p.name}</div>
+        <div class="small">${qty} × ${fmt(p.price)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        <button class="btn btn-ghost" data-decrease="${id}" aria-label="Decrease">−</button>
+        <button class="btn btn-primary" data-remove="${id}" aria-label="Remove">✕</button>
+      </div>`;
+    cartEl.appendChild(node);
+  });
+  el("#cartCount").textContent = ids.reduce((s,id)=>s+cart[id],0);
+  el("#total").textContent = fmt(total);
+}
+
+/* ---------------------
+   Search / Filter (debounced)
+   --------------------- */
+function debounce(fn,wait=250){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+
+const doSearch = debounce(()=>{
+  const q = el("#search").value.trim().toLowerCase();
+  if(!q){ renderProducts(PRODUCTS); return; }
+  const filtered = PRODUCTS.filter(p=> (p.name + " " + p.desc).toLowerCase().includes(q) );
+  renderProducts(filtered);
+},200);
+
+/* ---------------------
+   Event delegation for product actions and cart actions
+   --------------------- */
+document.addEventListener("click", (e)=>{
+  const add = e.target.closest("[data-add]");
+  const decr = e.target.closest("[data-decrease]");
+  const rem = e.target.closest("[data-remove]");
+  if(add){ addToCart(add.getAttribute("data-add")); return; }
+  if(decr){
+    const id = decr.getAttribute("data-decrease");
+    cart[id] = Math.max(0, (cart[id]||0) - 1);
+    if(cart[id]===0) delete cart[id];
+    saveCart();
+    return;
+  }
+  if(rem){
+    const id = rem.getAttribute("data-remove");
+    delete cart[id];
+    saveCart();
+    return;
+  }
+});
+
+/* Small UI controls */
+el("#search").addEventListener("input", doSearch);
+el("#viewCartBtn").addEventListener("click", ()=>{ el("aside").scrollIntoView({behavior:"smooth"}); });
+el("#checkout").addEventListener("click", ()=>{
+  if(Object.keys(cart).length===0){ alert("Cart is empty — add something first."); return; }
+  // Lightweight checkout simulation
+  const total = el("#total").textContent;
+  alert("Thank you! Your order total is " + total + ". (Demo checkout)");
+  cart = {}; saveCart();
+});
+
+/* Theme toggle (prefers-color-scheme-aware) */
+const themeBtn = el("#themeBtn");
+function setTheme(dark){
+  if(dark){ document.documentElement.style.background="black"; document.body.style.background="black"; document.body.style.color="white"; }
+  else{ document.documentElement.style.background="white"; document.body.style.background="mintcream"; document.body.style.color="darkslategray"; }
+  localStorage.setItem("capstone_theme", dark ? "dark" : "light");
+}
+themeBtn.addEventListener("click", ()=>{
+  setTheme(localStorage.getItem("capstone_theme")!=="dark");
+});
+
+/* ---------------------
+   Init
+   - Render products
+   - Restore cart and theme
+   --------------------- */
+(function init(){
+  renderProducts(PRODUCTS);
+  updateCartUI();
+  // restore theme
+  if(localStorage.getItem("capstone_theme")==="dark") setTheme(true);
+})();
+</script>
+</body>
+</html>
